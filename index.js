@@ -51,8 +51,13 @@ function HyperTrie (storage, key, opts) {
   this.opened = false
   this.ready = thunky(this._ready.bind(this))
 
-  this._extension = opts.extension === false ? null : ((opts.extension === true ? null : opts.extension) || new Extension(this))
-  if (this._extension && !this._extension.outgoing) this._extension.outgoing = this.feed.registerExtension('hypertrie', this._extension)
+  const alreadyRegistered = this.feed.extensions.names().indexOf('hypertrie') !== -1
+  if (!alreadyRegistered) {
+    this._extension = opts.extension === false ? null : ((opts.extension === true ? null : opts.extension) || new Extension(this))
+    if (this._extension && !this._extension.outgoing) {
+      this._extension.outgoing = this.feed.registerExtension('hypertrie', this._extension)
+    }
+  }
 
   this._watchers = []
   this._checkout = (opts && opts.checkout) || 0
